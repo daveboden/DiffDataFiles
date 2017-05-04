@@ -1,0 +1,5 @@
+Key|Name|Description|IgnoreMe
+A-SAME|Same Name|Same Description|
+B-NOT_IN_OLD|New Name|New Description|
+D-SAME_Except_Ignore|Same Name|Same Description|Different NEW NEW
+E-DIFFERENT|Name is NEW|Description is NEW|Ignore is the same
