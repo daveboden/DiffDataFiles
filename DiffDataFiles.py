@@ -117,7 +117,9 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
                                 printExtra(dataOldRest)
                             break
 
-    print differenceCount
+    sortedDifferenceCount = sorted(differenceCount.items(), key=lambda k: (-k[1],k[0]))
+    for sdc in sortedDifferenceCount:
+        print sdc[0] + ": " + str(sdc[1])
 
 def readKeysFileIntoArray(filename):
     with open(filename, "r") as f_in:
