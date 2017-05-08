@@ -4,3 +4,4 @@ C-NOT_IN_NEW|Old Name|Old Description|
 D-SAME_Except_Ignore|Same Name|Same Description|Different OLD OLD
 E-DIFFERENT|Name is OLD|Description is OLD|Ignore is the same
 G-DIFFERENT_ButIgnoreKey|Name is OLD|Description is OLD|Ignore is the same
+H-DIFFERENT|Name is same|Description is OLD|Ignore is the same
