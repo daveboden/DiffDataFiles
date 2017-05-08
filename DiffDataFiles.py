@@ -131,3 +131,26 @@ def shouldKeyBeIgnored(ignoreKeys, keyToCheck):
         'Locate the leftmost value exactly equal to x'
         i = bisect.bisect_left(ignoreKeys, keyToCheck)
         return i != len(ignoreKeys) and ignoreKeys[i] == keyToCheck
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Diff pipe separate data files that are already sorted by key in the first column.')
+    parser.add_argument("--oldFile", required=True)
+    parser.add_argument("--newFile", required=True)
+    parser.add_argument("--outputFile", required=True)
+    parser.add_argument("--ignoreKeysFile")
+    parser.add_argument("--ignoreColumns")
+    parser.add_argument("--maxCount", type=int)
+    args = parser.parse_args()
+
+    if(args.ignoreKeysFile != None):
+        ignoreKeys = readKeysFileIntoArray(args.ignoreKeysFile)
+    else:
+        ignoreKeys = None
+
+    diffDataFiles(args.oldFile,
+                  args.newFile,
+                  args.outputFile,
+                  ignoreKeys=ignoreKeys,
+                  ignoreColumns=args.ignoreColumns.split(','))
