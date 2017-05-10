@@ -2,12 +2,16 @@
 import csv
 import bisect
 
-def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys = None, maxCount = None):
+
+def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns=None, ignoreKeys=None, maxCount=None):
 
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
     count=0
     differenceCount = {}
+
+    extraCount = [0]
+    missingCount = [0]
 
     with open(fileOld, "rb") as csvfileOld:
         with open(fileNew, "rb") as csvfileNew:
@@ -34,6 +38,7 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
 
                 def printExtra(newRow):
                     if not shouldKeyBeIgnored(ignoreKeys, newRow[keyColumn]):
+                        extraCount[0] += 1
                         outputRow = [newRow[keyColumn]]
                         for fieldname in fieldnames:
                             outputRow.append("")
@@ -43,6 +48,7 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
 
                 def printMissing(oldRow):
                     if not shouldKeyBeIgnored(ignoreKeys, oldRow[keyColumn]):
+                        missingCount[0] += 1
                         outputRow = [oldRow[keyColumn]]
                         for fieldname in fieldnames:
                             outputRow.append(oldRow[fieldname])
@@ -52,7 +58,7 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
 
                 while True:
                     #Now that we have the first row of both files, let's compare them then iterate.
-                    count = count + 1
+                    count += 1
                     if maxCount != None and count > maxCount:
                         break
 
@@ -92,7 +98,7 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
                                         differences = True
 
                                         if differenceCount.has_key(fieldname):
-                                            differenceCount[fieldname] = differenceCount[fieldname] + 1
+                                            differenceCount[fieldname] += 1
                                         else:
                                             differenceCount[fieldname] = 1
                                 else:
@@ -117,6 +123,10 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns = None, ignoreKeys
                             for dataOldRest in readerOld:
                                 printExtra(dataOldRest)
                             break
+
+    print "Missing count =", missingCount[0]
+    print "Extra count =", extraCount[0]
+    print "---- Column differences ----"
 
     sortedDifferenceCount = sorted(differenceCount.items(), key=lambda k: (-k[1],k[0]))
     for sdc in sortedDifferenceCount:
