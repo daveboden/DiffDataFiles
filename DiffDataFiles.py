@@ -94,7 +94,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                                 output_row.append(data_old[fieldname])
                                 output_row.append(data_new[fieldname])
                                 if data_old[fieldname] != data_new[fieldname]:
-                                    output_row.append("N")
+                                    output_row.append("no")
                                     if not ignore_columns or fieldname not in ignore_columns:
                                         differences = True
 
@@ -103,7 +103,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                                         else:
                                             difference_columns[fieldname] = 1
                                 else:
-                                    output_row.append("Y")
+                                    output_row.append("yes")
 
                             if differences:
                                 difference_count[0] += 1
