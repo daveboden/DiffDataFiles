@@ -8,8 +8,9 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns=None, ignoreKeys=N
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
     count=0
-    differenceCount = {}
+    differenceColumns = {}
 
+    differenceCount = [0]
     extraCount = [0]
     missingCount = [0]
 
@@ -97,14 +98,15 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns=None, ignoreKeys=N
                                     if ignoreColumns == None or fieldname not in ignoreColumns:
                                         differences = True
 
-                                        if differenceCount.has_key(fieldname):
-                                            differenceCount[fieldname] += 1
+                                        if differenceColumns.has_key(fieldname):
+                                            differenceColumns[fieldname] += 1
                                         else:
-                                            differenceCount[fieldname] = 1
+                                            differenceColumns[fieldname] = 1
                                 else:
                                     outputRow.append("Y")
 
                             if differences:
+                                differenceCount[0] += 1
                                 writerReport.writerow(outputRow)
 
                         #Read in another old row and another new row.
@@ -124,11 +126,13 @@ def diffDataFiles(fileOld, fileNew, fileOutput, ignoreColumns=None, ignoreKeys=N
                                 printExtra(dataOldRest)
                             break
 
-    print "Missing count =", missingCount[0]
-    print "Extra count =", extraCount[0]
-    print "---- Column differences ----"
+    print "Different rows count =", differenceCount[0]
+    print "Missing rows count =", missingCount[0]
+    print "Extra rows count =", extraCount[0]
 
-    sortedDifferenceCount = sorted(differenceCount.items(), key=lambda k: (-k[1],k[0]))
+    sortedDifferenceCount = sorted(differenceColumns.items(), key=lambda k: (-k[1],k[0]))
+    if len(sortedDifferenceCount) > 0:
+        print "-- Column diffs --"
     for sdc in sortedDifferenceCount:
         print sdc[0] + ": " + str(sdc[1])
 
