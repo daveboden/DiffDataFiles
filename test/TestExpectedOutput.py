@@ -4,4 +4,4 @@ fileOutput = "output/actual-output-do-not-commit.txt"
 
 import DiffDataFiles
 
-DiffDataFiles.diffDataFiles(fileOld, fileNew, fileOutput, ["IgnoreMe"], ["G-DIFFERENT_ButIgnoreKey"])
+DiffDataFiles.diff_data_files(fileOld, fileNew, fileOutput, ["IgnoreMe"], ["G-DIFFERENT_ButIgnoreKey"])
