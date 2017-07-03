@@ -1,0 +1,7 @@
+Key|OtherKey|Description
+KEY1|OTHERKEY1|Old Description
+KEY1|OTHERKEY2|Same Description
+KEY1|OTHERKEY5|Same Description
+KEY2|OTHERKEY1|Same Description
+KEY2|OTHERKEY2|Old Description
+KEY2|OTHERKEY3|Same Description

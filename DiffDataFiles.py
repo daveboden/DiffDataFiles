@@ -3,7 +3,8 @@ import csv
 import bisect
 
 
-def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore_keys=None, max_count=None):
+def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
+                    ignore_keys=None, max_count=None, key_column_count=1):
 
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
@@ -20,8 +21,8 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
             reader_old = csv.DictReader(csvfileOld, dialect='piper')
             reader_new = csv.DictReader(csvfileNew, dialect='piper')
 
-            key_column = reader_new.fieldnames[0]
-            fieldnames = reader_new.fieldnames[1:]  # Remove key column
+            key_columns = reader_new.fieldnames[:key_column_count]
+            fieldnames = reader_new.fieldnames[key_column_count:]  # Remove key column
 
             # Will throw StopIterator exceptions if the files are unexpectedly empty
             data_old = reader_old.next()
@@ -30,7 +31,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
             with open(file_output, "wb") as reportFile:
                 writer_report = csv.writer(reportFile, dialect='piper')
 
-                header_row = [key_column]
+                header_row = list(key_columns)
                 for fieldname in fieldnames:
                     header_row.append(fieldname + ' Old')
                     header_row.append(fieldname + ' New')
@@ -38,9 +39,9 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                 writer_report.writerow(header_row)
 
                 def print_extra(new_row):
-                    if not should_key_be_ignored(ignore_keys, new_row[key_column]):
+                    if not should_key_be_ignored(ignore_keys, new_row[key_columns[0]]):
                         extra_count[0] += 1
-                        output_r = [new_row[key_column]]
+                        output_r = list(map(lambda x: new_row[x], key_columns))
                         for f in fieldnames:
                             output_r.append("")
                             output_r.append(new_row[f])
@@ -48,9 +49,9 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                         writer_report.writerow(output_r)
 
                 def print_missing(old_row):
-                    if not should_key_be_ignored(ignore_keys, old_row[key_column]):
+                    if not should_key_be_ignored(ignore_keys, old_row[key_columns[0]]):
                         missing_count[0] += 1
-                        output_r = [old_row[key_column]]
+                        output_r = list(map(lambda x: old_row[x], key_columns))
                         for f in fieldnames:
                             output_r.append(old_row[f])
                             output_r.append("")
@@ -63,7 +64,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                     if max_count and count > max_count:
                         break
 
-                    if data_old[key_column] < data_new[key_column]:
+                    if less_than(data_old, data_new, key_columns):
                         print_missing(data_old)
                         try:
                             data_old = reader_old.next()
@@ -74,7 +75,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                                 print_extra(data_new_rest)
                             break
 
-                    elif data_old[key_column] > data_new[key_column]:
+                    elif greater_than(data_old, data_new, key_columns):
                         print_extra(data_new)
                         try:
                             data_new = reader_new.next()
@@ -86,10 +87,10 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None, ignore
                             break
 
                     else:
-                        if not should_key_be_ignored(ignore_keys, data_new[key_column]):
+                        if not should_key_be_ignored(ignore_keys, data_new[key_columns[0]]):
                             # Compare and only print if there are differences
                             differences = False
-                            output_row = [data_new[key_column]]
+                            output_row = list(map(lambda x: data_new[x], key_columns))
                             for fieldname in fieldnames:
                                 output_row.append(data_old[fieldname])
                                 output_row.append(data_new[fieldname])
@@ -151,6 +152,24 @@ def should_key_be_ignored(ignore_keys, key_to_check):
         'Locate the leftmost value exactly equal to x'
         i = bisect.bisect_left(ignore_keys, key_to_check)
         return i != len(ignore_keys) and ignore_keys[i] == key_to_check
+
+
+def less_than(data_old, data_new, key_cols):
+    for key_column in key_cols:
+        if data_old[key_column] < data_new[key_column]:
+            return True
+        elif data_old[key_column] > data_new[key_column]:
+            return False
+    return False
+
+
+def greater_than(data_old, data_new, key_cols):
+    for key_column in key_cols:
+        if data_old[key_column] > data_new[key_column]:
+            return True
+        elif data_old[key_column] < data_new[key_column]:
+            return False
+    return False
 
 
 if __name__ == "__main__":
