@@ -1,4 +1,5 @@
 Key|Name Old|Name New|Name Equiv|Description Old|Description New|Description Equiv|IgnoreMe Old|IgnoreMe New|IgnoreMe Equiv
 B-NOT_IN_OLD||New Name|extra||New Description|extra|||extra
 C-NOT_IN_NEW|Old Name||missing|Old Description||missing|||missing
-E-DIFFERENT|Name is OLD|Name is NEW|N|Description is OLD|Description is NEW|N|Ignore is the same|Ignore is the same|Y
+E-DIFFERENT|Name is OLD|Name is NEW|no|Description is OLD|Description is NEW|no|Ignore is the same|Ignore is the same|yes
+H-DIFFERENT|Name is same|Name is same|yes|Description is OLD|Description is NEW|no|Ignore is the same|Ignore is the same|yes

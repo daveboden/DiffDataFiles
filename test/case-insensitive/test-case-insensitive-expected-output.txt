@@ -1,0 +1,3 @@
+Key|CaseSensitive Old|CaseSensitive New|CaseSensitive Equiv|CaseInsensitive Old|CaseInsensitive New|CaseInsensitive Equiv
+BB-BothDifferent|uppercase Value|UPPERCASE Value|no|uppercase Value|UPPERCASE Value|yes
+CC-JustCaseSensitiveDifferent|uppercase Value|UPPERCASE Value|no|Same Value|Same Value|yes

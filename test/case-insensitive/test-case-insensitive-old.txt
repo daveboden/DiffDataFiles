@@ -1,0 +1,5 @@
+Key|CaseSensitive|CaseInsensitive
+AA-Same|The same|The same
+BB-BothDifferent|uppercase Value|uppercase Value
+CC-JustCaseSensitiveDifferent|uppercase Value|Same Value
+DD-JustCaseInsensitiveDifferent|Same Value|uppercase Value

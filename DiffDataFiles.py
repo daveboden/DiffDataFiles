@@ -4,7 +4,7 @@ import bisect
 
 
 def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
-                    ignore_keys=None, max_count=None, key_column_count=1):
+                    ignore_keys=None, max_count=None, key_column_count=1, ignore_case_columns=None):
 
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
@@ -94,7 +94,13 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
                             for fieldname in fieldnames:
                                 output_row.append(data_old[fieldname])
                                 output_row.append(data_new[fieldname])
-                                if data_old[fieldname] != data_new[fieldname]:
+
+                                if ignore_case_columns and fieldname in ignore_case_columns:
+                                    diff_exists = data_old[fieldname].lower() != data_new[fieldname].lower()
+                                else:
+                                    diff_exists = data_old[fieldname] != data_new[fieldname]
+
+                                if diff_exists:
                                     output_row.append("no")
                                     if not ignore_columns or fieldname not in ignore_columns:
                                         differences = True
