@@ -190,6 +190,7 @@ if __name__ == "__main__":
     parser.add_argument("--ignore_keys_file")
     parser.add_argument("--ignore_columns")
     parser.add_argument("--max_count", type=int)
+    parser.add_argument("--key_column_count", type=int)
     args = parser.parse_args()
 
     if args.ignore_keys_file:
@@ -197,8 +198,14 @@ if __name__ == "__main__":
     else:
         ignore_keys_main = None
 
+    if args.ignore_columns:
+        ignore_columns_main = args.ignore_columns.split(',')
+    else:
+        ignore_columns_main = None
+
     diff_data_files(args.old_file,
                     args.new_file,
                     args.output_file,
                     ignore_keys=ignore_keys_main,
-                    ignore_columns=args.ignoreColumns.split(','))
+                    ignore_columns=ignore_columns_main,
+                    key_column_count=args.key_column_count)
