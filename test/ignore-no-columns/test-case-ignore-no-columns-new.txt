@@ -1,0 +1,5 @@
+Key|IgnoreBlankToNo|DoNotIgnore
+AA-Same|The same|The same
+BB-BothDifferent|value1B|value2B
+CC-BlankLeftNoRight|No|Same Value
+DD-BlankRightNoLeft||Same Value

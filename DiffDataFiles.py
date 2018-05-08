@@ -4,7 +4,10 @@ import bisect
 
 
 def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
-                    ignore_keys=None, max_count=None, key_column_count=1, ignore_case_columns=None):
+                    ignore_keys=None, max_count=None, key_column_count=1,
+                    ignore_case_columns=None,column_names=None,ignore_blank_to_no_columns=None):
+
+    no_values = ['N', 'No', 'no']
 
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
@@ -15,11 +18,21 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
     extra_count = [0]
     missing_count = [0]
 
+    #Closure which has access to the column configurations. Data must be passed in.
+    def diff_exists(data_old, data_new, fieldname):
+        if ignore_blank_to_no_columns and fieldname in ignore_blank_to_no_columns and data_old[fieldname] == "" and data_new[fieldname] in no_values:
+            return False
+
+        if ignore_case_columns and fieldname in ignore_case_columns:
+            return data_old[fieldname].lower() != data_new[fieldname].lower()
+        else:
+            return data_old[fieldname] != data_new[fieldname]
+
     with open(file_old, "rb") as csvfileOld:
         with open(file_new, "rb") as csvfileNew:
 
-            reader_old = csv.DictReader(csvfileOld, dialect='piper')
-            reader_new = csv.DictReader(csvfileNew, dialect='piper')
+            reader_old = csv.DictReader(csvfileOld, dialect='piper', fieldnames=column_names)
+            reader_new = csv.DictReader(csvfileNew, dialect='piper', fieldnames=column_names)
 
             key_columns = reader_new.fieldnames[:key_column_count]
             fieldnames = reader_new.fieldnames[key_column_count:]  # Remove key column
@@ -95,12 +108,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
                                 output_row.append(data_old[fieldname])
                                 output_row.append(data_new[fieldname])
 
-                                if ignore_case_columns and fieldname in ignore_case_columns:
-                                    diff_exists = data_old[fieldname].lower() != data_new[fieldname].lower()
-                                else:
-                                    diff_exists = data_old[fieldname] != data_new[fieldname]
-
-                                if diff_exists:
+                                if diff_exists(data_old, data_new, fieldname):
                                     output_row.append("no")
                                     if not ignore_columns or fieldname not in ignore_columns:
                                         differences = True
@@ -191,6 +199,8 @@ if __name__ == "__main__":
     parser.add_argument("--ignore_columns")
     parser.add_argument("--max_count", type=int)
     parser.add_argument("--key_column_count", type=int)
+    parser.add_argument("--column_names")
+    parser.add_argument("--ignore_blank_to_no_columns")
     args = parser.parse_args()
 
     if args.ignore_keys_file:
@@ -203,9 +213,21 @@ if __name__ == "__main__":
     else:
         ignore_columns_main = None
 
+    if args.column_names:
+        column_names_main = args.column_names.split(',')
+    else:
+        column_names_main = None
+
+    if args.ignore_blank_to_no_columns:
+        ignore_blank_to_no_columns_main = args.ignore_blank_to_no_columns.split(',')
+    else:
+        ignore_blank_to_no_columns_main = None
+
     diff_data_files(args.old_file,
                     args.new_file,
                     args.output_file,
                     ignore_keys=ignore_keys_main,
                     ignore_columns=ignore_columns_main,
-                    key_column_count=args.key_column_count)
+                    key_column_count=args.key_column_count,
+                    column_names=column_names_main,
+                    ignore_blank_to_no_columns=ignore_blank_to_no_columns_main)

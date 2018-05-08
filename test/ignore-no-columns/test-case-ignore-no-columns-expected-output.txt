@@ -1,0 +1,3 @@
+Key|IgnoreBlankToNo Old|IgnoreBlankToNo New|IgnoreBlankToNo Equiv|DoNotIgnore Old|DoNotIgnore New|DoNotIgnore Equiv
+BB-BothDifferent|value1A|value1B|no|value2A|value2B|no
+DD-BlankRightNoLeft|No||no|Same Value|Same Value|yes
