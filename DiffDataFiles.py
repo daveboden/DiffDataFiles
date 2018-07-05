@@ -7,7 +7,7 @@ def diff_data_files(file_old, file_new, file_output, ignore_columns=None,
                     ignore_keys=None, max_count=None, key_column_count=1,
                     ignore_case_columns=None,column_names=None,ignore_blank_to_no_columns=None):
 
-    no_values = ['N', 'No', 'no']
+    no_values = ['N', 'No', 'no', 'None']
 
     csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
 
